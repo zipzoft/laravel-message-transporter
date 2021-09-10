@@ -7,7 +7,6 @@ use ReflectionClass;
 
 class Capsule
 {
-
     use SerializesModels;
 
     /**
@@ -16,11 +15,6 @@ class Capsule
      * @var string
      */
     public $name;
-
-    /**
-     * @var object
-     */
-    public $event;
 
     /**
      * @var string[]

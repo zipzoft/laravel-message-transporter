@@ -1,9 +1,9 @@
 <?php
 
-namespace Tests;
+namespace Zipzoft\Tests;
 
-use Zipzoft\MessageTransporter\Broadcasters\NoneBroadcaster;
-use Zipzoft\MessageTransporter\Broadcasters\RedisBroadcaster;
+use Zipzoft\MessageTransporter\Broadcasters\NoneBroadcastAdapter;
+use Zipzoft\MessageTransporter\Broadcasters\RedisBroadcastAdapter;
 use Zipzoft\MessageTransporter\Broadcasters\ServiceBroadcaster;
 use Zipzoft\MessageTransporter\Factory;
 use Zipzoft\MessageTransporter\Manager;
@@ -24,7 +24,7 @@ class InstanceTest extends TestCase
     public function testDefaultDriver()
     {
         $this->assertInstanceOf(
-            NoneBroadcaster::class,
+            NoneBroadcastAdapter::class,
             $this->app->make(ServiceBroadcaster::class)
         );
     }
@@ -36,7 +36,7 @@ class InstanceTest extends TestCase
             'message-transporter.default' => 'redis'
         ]);
 
-        $this->assertInstanceOf(RedisBroadcaster::class, $this->app->make(ServiceBroadcaster::class));
+        $this->assertInstanceOf(RedisBroadcastAdapter::class, $this->app->make(ServiceBroadcaster::class));
     }
 
 }

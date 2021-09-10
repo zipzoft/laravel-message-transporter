@@ -2,6 +2,9 @@
 
 namespace Zipzoft\MessageTransporter;
 
+use Illuminate\Contracts\Support\Arrayable;
+use ReflectionClass;
+use ReflectionProperty;
 use Zipzoft\MessageTransporter\Broadcasters\ServiceBroadcaster;
 use Zipzoft\MessageTransporter\Jobs\SendMessage;
 
@@ -25,16 +28,28 @@ class BroadcastAppServicesListener
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param string $eventName
+     * @parent array $data
      * @return void
      */
-    public function handle($event)
+    public function handle($eventName, array $data)
     {
-        if ($this->shouldBroadcast($event)) {
+        if (! is_array($data) || empty($data)) {
+            return;
+        }
+
+        $event = $data[0];
+
+        if ($this->shouldServiceBroadcast($event)) {
+            $channels = $this->getChannels($event);
+
+            if (empty($channels)) {
+                return;
+            }
+
             $capsule = Capsule::fromArray([
                 'name' => $this->getEventName($event),
-                'event' => $event,
-                'channels' => $this->getChannels($event),
+                'channels' => $channels,
                 'data' => $this->getData($event),
             ]);
 
@@ -71,7 +86,11 @@ class BroadcastAppServicesListener
      */
     protected function getQueueName($event)
     {
-        return $event->queue ?: config('message-transporter.queue.queue');
+        if (property_exists($event, 'queue') && $event->queue) {
+            return $event->queue;
+        }
+
+        return config('message-transporter.queue.queue');
     }
 
     /**
@@ -80,29 +99,24 @@ class BroadcastAppServicesListener
      */
     protected function getQueueConnectionName($event)
     {
-        return $event->connection
-            ?: config('message-transporter.queue.connection')
-            ?: config('queue.default');
+        if (property_exists($event, 'connection') && $event->connection) {
+            return $event->connection;
+        }
+
+        return config('message-transporter.queue.connection') ?: config('queue.default');
     }
 
     /**
-     * @return null|bool|array
+     * @param $event
+     * @return bool
      */
-    private function getQueueConfig()
-    {
-        return config('message-transporter.queue');
-    }
-
-
     protected function shouldBeQueue($event)
     {
         if ($event instanceof ShouldBroadcastAppServicesNow) {
             return false;
         }
 
-        $config = $this->getQueueConfig();
-
-        if ($config === false) {
+        if (config('message-transporter.queue') === false) {
             return false;
         }
 
@@ -134,7 +148,8 @@ class BroadcastAppServicesListener
 
     /**
      * @param $event
-     * @return array|null
+     * @return array|mixed
+     * @throws \ReflectionException
      */
     protected function getData($event)
     {
@@ -144,14 +159,22 @@ class BroadcastAppServicesListener
             return $event->broadcastWith();
         }
 
-        return null;
+        $payload = [];
+
+        foreach ((new ReflectionClass($event))->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            $payload[$property->getName()] = $this->formatProperty($property->getValue($event));
+        }
+
+        unset($payload['broadcastQueue']);
+
+        return $payload;
     }
 
     /**
      * @param object $event
      * @return bool
      */
-    protected function shouldBroadcast($event)
+    protected function shouldServiceBroadcast($event)
     {
         if ($event instanceof ShouldBroadcastAppServices) {
             if (method_exists($event, 'broadcastServicesWhen')) {
@@ -164,5 +187,20 @@ class BroadcastAppServicesListener
         }
 
         return false;
+    }
+
+    /**
+     * Format the given value for a property.
+     *
+     * @param  mixed  $value
+     * @return mixed
+     */
+    protected function formatProperty($value)
+    {
+        if ($value instanceof Arrayable) {
+            return $value->toArray();
+        }
+
+        return $value;
     }
 }

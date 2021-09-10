@@ -8,7 +8,7 @@ use Zipzoft\MessageTransporter\Event\OnMessage;
 use Zipzoft\MessageTransporter\Factory;
 use Zipzoft\MessageTransporter\Manager;
 
-abstract class AbstractBroadcaster implements ServiceBroadcaster
+abstract class AbstractBroadcastAdapter implements ServiceBroadcaster
 {
     /**
      * @param string $event

@@ -3,8 +3,8 @@
 namespace Zipzoft\MessageTransporter;
 
 use Illuminate\Support\Manager as LaravelManager;
-use Zipzoft\MessageTransporter\Broadcasters\NoneBroadcaster;
-use Zipzoft\MessageTransporter\Broadcasters\RedisBroadcaster;
+use Zipzoft\MessageTransporter\Broadcasters\NoneBroadcastAdapter;
+use Zipzoft\MessageTransporter\Broadcasters\RedisBroadcastAdapter;
 use Zipzoft\MessageTransporter\Broadcasters\ServiceBroadcaster;
 
 class Manager extends LaravelManager implements Factory
@@ -18,19 +18,19 @@ class Manager extends LaravelManager implements Factory
     }
 
     /**
-     * @return RedisBroadcaster
+     * @return RedisBroadcastAdapter
      */
     protected function createRedisDriver()
     {
-        return $this->container->make(RedisBroadcaster::class);
+        return $this->container->make(RedisBroadcastAdapter::class);
     }
 
     /**
-     * @return NoneBroadcaster
+     * @return NoneBroadcastAdapter
      */
     protected function createNoneDriver()
     {
-        return new NoneBroadcaster();
+        return new NoneBroadcastAdapter();
     }
 
     /**

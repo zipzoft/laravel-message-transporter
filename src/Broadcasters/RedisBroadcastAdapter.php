@@ -4,7 +4,7 @@ use Illuminate\Contracts\Redis\Factory as RedisFactory;
 use Illuminate\Support\Facades\Event;
 use Zipzoft\MessageTransporter\Event\OnMessage;
 
-class RedisBroadcaster extends AbstractBroadcaster
+class RedisBroadcastAdapter extends AbstractBroadcastAdapter
 {
     /**
      * @var RedisFactory
@@ -59,7 +59,7 @@ class RedisBroadcaster extends AbstractBroadcaster
     protected function onSubscribeChannels(array $channels)
     {
         if (! $this->consumer) {
-            $this->consumer = $this->consumer->connection($this->getConnectionConsumerName());
+            $this->consumer = $this->factory->connection($this->getConnectionConsumerName());
         }
 
         $this->consumer->subscribe($channels, function ($message, $channel) {

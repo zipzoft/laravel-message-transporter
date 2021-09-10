@@ -4,22 +4,21 @@ namespace Zipzoft\MessageTransporter\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\SerializesModels;
 use Zipzoft\MessageTransporter\Broadcasters\ServiceBroadcaster;
 use Zipzoft\MessageTransporter\Capsule;
 
 class SendMessage implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     /**
      * @var Capsule
      */
-    public Capsule $capsule;
+    public $capsule;
 
     /**
-     * @param $event
-     * @param array $channels
-     * @param array $data
+     * @param Capsule $capsule
      */
     public function __construct(Capsule $capsule)
     {
@@ -31,8 +30,11 @@ class SendMessage implements ShouldQueue
      *
      * @return void
      */
-    public function handle(ServiceBroadcaster $broadcaster)
+    public function handle()
     {
+        /** @var ServiceBroadcaster $broadcaster */
+        $broadcaster = app(ServiceBroadcaster::class);
+
         $broadcaster->broadcast(
             $this->capsule->name,
             $this->capsule->channels,

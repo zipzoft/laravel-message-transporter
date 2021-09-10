@@ -6,5 +6,5 @@ return [
 
     'connection_prefix' => 'app-services_',
 
-    'queue' => false,
+    'queue' => true,
 ];

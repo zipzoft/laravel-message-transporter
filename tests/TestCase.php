@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Zipzoft\Tests;
 
 use Orchestra\Testbench\TestCase as Test;
 use Zipzoft\MessageTransporter\MessageTransporterServiceProvider;

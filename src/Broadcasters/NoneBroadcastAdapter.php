@@ -1,7 +1,7 @@
 <?php namespace Zipzoft\MessageTransporter\Broadcasters;
 
 
-class NoneBroadcaster extends AbstractBroadcaster
+class NoneBroadcastAdapter extends AbstractBroadcastAdapter
 {
     /**
      * @param $event
