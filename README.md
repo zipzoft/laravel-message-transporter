@@ -79,7 +79,7 @@ use Zipzoft\MessageTransporter\ShouldBroadcastAppServices;
 use Zipzoft\MessageTransporter\ShouldBroadcastAppServicesNow;
 use Illuminate\Broadcasting\Channel;
 
-class UserCreated implements ShouldBroadcastAppServices
+class UserCreated implements ShouldBroadcastAppServicesNow
 {
     //
 }
@@ -96,7 +96,7 @@ class UserCreated implements ShouldBroadcastAppServices
 return [
     'default' => env('SERVICE_BROADCASTER_DRIVER', 'none'),
     'connection_prefix' => 'app-services_',
-    'queue' => false,
+    'queue' => true,
 ]
 ```
 
