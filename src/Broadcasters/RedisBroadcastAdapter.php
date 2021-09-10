@@ -60,9 +60,11 @@ class RedisBroadcastAdapter extends AbstractBroadcastAdapter
     {
         if (! $this->consumer) {
             $this->consumer = $this->factory->connection($this->getConnectionConsumerName());
+
+            ini_set('default_socket_timeout', -1);
         }
 
-        $this->consumer->subscribe($channels, function ($message, $channel) {
+        $this->consumer->psubscribe($channels, function ($message, $channel) {
             Event::dispatch(new OnMessage($channel, $message));
         });
     }

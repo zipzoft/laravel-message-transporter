@@ -9,6 +9,6 @@ return [
     'port' => env('REDIS_PORT', '6379'),
     'database' => 2,
     'options' => [
-        'prefix' => strtolower(Str::slug(env('APP_NAME'), '_').'.'.env('APP_ENV')).'::',
+        'prefix' => env('SERVICE_BROADCASTER_PREFIX', strtolower(Str::slug(env('APP_NAME'), '_').'.'.env('APP_ENV')).'::'),
     ]
 ];
