@@ -9,7 +9,7 @@ class OnMessage
      *
      * @var string
      */
-    public string $channel;
+    public $channel;
 
     /**
      * @var string|null
@@ -17,17 +17,19 @@ class OnMessage
     public $event;
 
     /**
-     * @var string
+     * @var array|string|null
      */
-    public $message;
+    public $data;
 
     /**
      * @param string $channel
-     * @param string $message
+     * @param string|null $event
+     * @param array|string|null $data
      */
-    public function __construct(string $channel, string $message)
+    public function __construct(string $channel, $event = null, $data = null)
     {
+        $this->event = $event;
         $this->channel = $channel;
-        $this->message = $message;
+        $this->data = $data;
     }
 }

@@ -244,9 +244,9 @@ class SubscribeAppServicesCommand extends Command
     public function handle()
     {
         $this->broadcaster->subscribe(['myweb*'], function (OnMessage $event) {
-            // $event->event;
-            // $event->message;
-            // $event->channel;
+            // $event->event (string|null)
+            // $event->data (array|string|null)
+            // $event->channel (string)
         });
 
         return 0;

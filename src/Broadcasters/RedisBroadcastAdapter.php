@@ -65,7 +65,16 @@ class RedisBroadcastAdapter extends AbstractBroadcastAdapter
         }
 
         $this->consumer->psubscribe($channels, function ($message, $channel) {
-            Event::dispatch(new OnMessage($channel, $message));
+            $json = @json_decode($message, true);
+
+            if ($json) {
+                $event = $json['event'] ?? null;
+                $data = $json['data'] ?? null;
+
+                Event::dispatch(new OnMessage($channel, $event, $data));
+            } else {
+                Event::dispatch(new OnMessage($channel, null, $message));
+            }
         });
     }
 
